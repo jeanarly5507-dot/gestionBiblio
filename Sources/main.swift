@@ -1,93 +1,230 @@
 
 import Foundation
 
-// CREATION DE LA BIBLIOTHEQUE
-
 let bibliotheque = Bibliotheque()
 
-print("=====================================")
-print("       BIBLIOTHEQUE CHCL")
-print("=====================================")
-
-// 2. AJOUT DES LIVRES
-
-let livre1 = LivrePapier(
-    titre: "Les Miserables",
-    auteur: "Victor Hugo",
-    nombrePages: 500)
-
-let livre2 = LivreNumerique(
-    titre: "Swift Programming",
-    auteur: "Apple",
-    tailleFichierMo: 25.5)
-
-let livre3 = LivrePapier(
-    titre: "Le Petit Prince",
-    auteur: "Antoine de Saint-Exupery",
-    nombrePages: 120)
-bibliotheque.ajouterLivre(livre1)
-bibliotheque.ajouterLivre(livre2)
-bibliotheque.ajouterLivre(livre3)
-
-// CREATION D'UN ADHERENT
-
-let adherent1 = Adherent(nom: "Jean Max")
-
-
-
-// AFFICHER LE CATALOGUE
-
-bibliotheque.afficherCatalogue()
-
-// EMPRUNTER UN LIVRE
-print("\n===== PREMIER EMPRUNT =====")
-adherent1.emprunterLivre(livre1)
-
-// ESSAYER D'EMPRUNTER UN LIVRE
-
-print("\n===== TEST DE DISPONIBILITE =====")
-
-adherent1.emprunterLivre(livre1)
-
-// AUTRES EMPRUNTS
-
-print("\n========= AUTRES EMPRUNTS =========")
-
-adherent1.emprunterLivre(livre2)
-adherent1.emprunterLivre(livre3)
-
-// TESTER LA LIMITE DE 3 LIVRES
-
-print("\n===== TEST LIMITE =====")
-
-let livre4 = Livre(
-    titre: "Introduction a Swift",
-    auteur: "Arly")
-
-bibliotheque.ajouterLivre(livre4)
-adherent1.emprunterLivre(livre4)
-
-//  AFFICHER LES EMPRUNTS
-
-adherent1.afficherEmprunts()
-
-//  RETOURNER UN LIVRE
-
-
-print("\n===== RETOUR D'UN LIVRE =====")
-
-adherent1.retournerLivre(livre1)
-
-// AFFICHER LES EMPRUNTS FINAUX
-
-adherent1.afficherEmprunts()
-
-// RECHERCHER UN LIVRE
-
-print("\n===== RECHERCHE =====")
-if let livreTrouve = bibliotheque.rechercherLivre(
-    titre: "Swift Programming"
-) {
-    livreTrouve.afficherInformations()
+// Fonction de saisie du texte
+func lireTexte(_ message: String) -> String {
+    print(message, terminator: "")
+    return readLine()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 }
-print("\n===== FIN DU PROGRAMME =====")
+
+// Fonction de saisie d'un entier
+func lireEntier(_ message: String) -> Int {
+    while true {
+        let valeur = lireTexte(message)
+
+        if let nombre = Int(valeur) {
+            return nombre
+        }
+
+        print("Veuillez entrer un nombre valide.")
+    }
+}
+
+// Fonction de saisie d'un nombre decimal
+func lireDecimal(_ message: String) -> Double {
+    while true {
+        let valeur = lireTexte(message)
+            .replacingOccurrences(of: ",", with: ".")
+
+        if let nombre = Double(valeur), nombre > 0 {
+            return nombre
+        }
+
+        print("Veuillez entrer un nombre valide.")
+    }
+}
+
+// Enregistrer un livre
+func enregistrerLivre() {
+    print("\n===== ENREGISTRER UN LIVRE =====")
+
+    let titre = lireTexte("Titre : ")
+    let auteur = lireTexte("Auteur : ")
+
+    if titre.isEmpty || auteur.isEmpty {
+        print("Le titre et l'auteur sont obligatoires.")
+        return
+    }
+
+    print("1. Livre papier")
+    print("2. Livre numerique")
+
+    let choix = lireEntier("Type de livre : ")
+
+    switch choix {
+    case 1:
+        let pages = lireEntier("Nombre de pages : ")
+
+        if pages <= 0 {
+            print("Nombre de pages invalide.")
+            return
+        }
+
+        let livre = LivrePapier(
+            titre: titre,
+            auteur: auteur,
+            nombrePages: pages
+        )
+
+        bibliotheque.ajouterLivre(livre)
+
+    case 2:
+        let taille = lireDecimal("Taille du fichier en Mo : ")
+
+        let livre = LivreNumerique(
+            titre: titre,
+            auteur: auteur,
+            tailleFichierMo: taille
+        )
+
+        bibliotheque.ajouterLivre(livre)
+
+    default:
+        print("Type de livre invalide.")
+    }
+}
+
+// Rechercher un livre
+func rechercherUnLivre() {
+    print("\n===== RECHERCHER UN LIVRE =====")
+
+    let titre = lireTexte("Entrez le titre : ")
+
+    if let livre = bibliotheque.rechercherLivre(titre: titre) {
+        print("Livre trouve :")
+        livre.afficherInformations()
+    } else {
+        print("Livre introuvable.")
+    }
+}
+
+// Enregistrer un adherent
+func enregistrerAdherent() {
+    print("\n===== ENREGISTRER UN ADHERENT =====")
+
+    let nom = lireTexte("Nom de l'adherent : ")
+
+    if nom.isEmpty {
+        print("Le nom est obligatoire.")
+        return
+    }
+
+    let adherent = Adherent(nom: nom)
+    bibliotheque.ajouterAdherent(adherent)
+}
+
+// Emprunter un livre
+func emprunterUnLivre() {
+    print("\n===== EMPRUNTER UN LIVRE =====")
+
+    let nom = lireTexte("Nom de l'adherent : ")
+
+    guard let adherent = bibliotheque.rechercherAdherent(nom: nom) else {
+        print("Adherent introuvable.")
+        return
+    }
+
+    let titre = lireTexte("Titre du livre : ")
+
+    guard let livre = bibliotheque.rechercherLivre(titre: titre) else {
+        print("Livre introuvable.")
+        return
+    }
+
+    adherent.emprunterLivre(livre)
+}
+
+// Retourner un livre
+func retournerUnLivre() {
+    print("\n===== RETOURNER UN LIVRE =====")
+
+    let nom = lireTexte("Nom de l'adherent : ")
+
+    guard let adherent = bibliotheque.rechercherAdherent(nom: nom) else {
+        print("Adherent introuvable.")
+        return
+    }
+
+    let titre = lireTexte("Titre du livre : ")
+
+    guard let livre = bibliotheque.rechercherLivre(titre: titre) else {
+        print("Livre introuvable.")
+        return
+    }
+
+    adherent.retournerLivre(livre)
+}
+
+// Afficher les emprunts
+func afficherEmprunts() {
+    print("\n===== AFFICHER LES EMPRUNTS =====")
+
+    let nom = lireTexte("Nom de l'adherent : ")
+
+    guard let adherent = bibliotheque.rechercherAdherent(nom: nom) else {
+        print("Adherent introuvable.")
+        return
+    }
+
+    adherent.afficherEmprunts()
+}
+
+// Menu principal
+var continuer = true
+
+while continuer {
+
+    print("\n")
+    print("========================================")
+    print("          BIBLIOTHEQUE CHCL")
+    print("          SYSTEME DE GESTION")
+    print("========================================")
+    print("1. Enregistrer un livre")
+    print("2. Afficher le catalogue")
+    print("3. Rechercher un livre")
+    print("4. Enregistrer un adherent")
+    print("5. Afficher les adherents")
+    print("6. Emprunter un livre")
+    print("7. Retourner un livre")
+    print("8. Afficher les emprunts")
+    print("9. Quitter")
+    print("========================================")
+
+    let choix = lireEntier("Choisissez une option : ")
+
+    switch choix {
+
+    case 1:
+        enregistrerLivre()
+
+    case 2:
+        bibliotheque.afficherCatalogue()
+
+    case 3:
+        rechercherUnLivre()
+
+    case 4:
+        enregistrerAdherent()
+
+    case 5:
+        bibliotheque.afficherAdherents()
+
+    case 6:
+        emprunterUnLivre()
+
+    case 7:
+        retournerUnLivre()
+
+    case 8:
+        afficherEmprunts()
+
+    case 9:
+        continuer = false
+        print("Merci d'avoir utilise la Bibliotheque CHCL !")
+
+    default:
+        print("Option invalide. Veuillez recommencer.")
+    }
+}

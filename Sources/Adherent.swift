@@ -21,8 +21,10 @@ class Adherent {
         if let index = livresEmpruntes.firstIndex(where: {
             $0 === livre
         }) {
-            livre.retourner()
-            livresEmpruntes.remove(at: index)
+            if livre.retourner() {
+    livresEmpruntes.remove(at: index)
+    print("\(nom) a retourne le livre.")
+}
             print("\(nom) a retourne le livre.")
         } else {
             print("Erreur : Ce livre n'est pas dans vos emprunts.")
