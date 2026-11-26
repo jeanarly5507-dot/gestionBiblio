@@ -2,7 +2,6 @@
 import Foundation
 
 let bibliotheque = Bibliotheque()
-
 // Fonction de saisie du texte
 func lireTexte(_ message: String) -> String {
     print(message, terminator: "")
@@ -17,7 +16,6 @@ func lireEntier(_ message: String) -> Int {
         if let nombre = Int(valeur) {
             return nombre
         }
-
         print("Veuillez entrer un nombre valide.")
     }
 }
@@ -31,11 +29,9 @@ func lireDecimal(_ message: String) -> Double {
         if let nombre = Double(valeur), nombre > 0 {
             return nombre
         }
-
         print("Veuillez entrer un nombre valide.")
     }
 }
-
 // Enregistrer un livre
 func enregistrerLivre() {
     print("\n===== ENREGISTRER UN LIVRE =====")
@@ -65,9 +61,7 @@ func enregistrerLivre() {
         let livre = LivrePapier(
             titre: titre,
             auteur: auteur,
-            nombrePages: pages
-        )
-
+            nombrePages: pages)
         bibliotheque.ajouterLivre(livre)
 
     case 2:
@@ -77,10 +71,8 @@ func enregistrerLivre() {
             titre: titre,
             auteur: auteur,
             tailleFichierMo: taille
-        )
-
+            )
         bibliotheque.ajouterLivre(livre)
-
     default:
         print("Type de livre invalide.")
     }
@@ -170,10 +162,8 @@ func afficherEmprunts() {
 
     adherent.afficherEmprunts()
 }
-
 // Menu principal
 var continuer = true
-
 while continuer {
 
     print("\n")
@@ -191,7 +181,6 @@ while continuer {
     print("8. Afficher les emprunts")
     print("9. Quitter")
     print("========================================")
-
     let choix = lireEntier("Choisissez une option : ")
 
     switch choix {
